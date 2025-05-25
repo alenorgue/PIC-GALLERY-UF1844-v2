@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add new image</title>
+     <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<%- include('partials/navbar') %>
+<form id="imageForm" action="/new-image" method="POST" enctype="multipart/form-data">
+  <label for="title">Título (máx. 30 caracteres, solo letras, números, espacios o guión bajo):</label>
+  <input 
+    type="text" 
+    name="title" 
+    id="title" 
+    maxlength="30" 
+    pattern="^[a-zA-Z0-9 _áéíóúÁÉÍÓÚñÑüÜ]*$"
+    required
+  >
+
+  <label for="url">URL de la imagen (opcional si subes un archivo):</label>
+  <input 
+    type="url" 
+    name="url" 
+    id="url" 
+    placeholder="https://example.com/image.jpg"
+  >
+
+  <label for="image">O selecciona una imagen para subir:</label>
+  <input type="file" name="image" id="image" accept="image/*">
+
+  <label for="date">Fecha (puedes escribirla o seleccionarla):</label>
+  <input 
+    type="date" 
+    name="date" 
+    id="date"
+    required
+  >
+
+  <label for="category">Categoría:</label>
+  <select name="category" id="category" required>
+    <option value="" disabled selected>Elige una categoría</option>
+    <option value="paisajes">Paisajes</option>
+    <option value="animales">Animales</option>
+    <option value="coches">Coches</option>
+    <option value="artisticos">Artísticos</option>
+    <option value="anime">Anime</option>
+    <option value="cine">Cine</option>
+    <option value="otros">Otros</option>
+  </select>
+
+  <input type="submit" value="Añadir imagen">
+</form>
+
+
+
+<% if (message) { %>
+  <section>
+    <p style="color: red;"><%= message %></p>
+  </section>
+<% } %>
+
+  <%- include('partials/footer') %>
+  
+  <script>
+  document.getElementById('imageForm').addEventListener('submit', function (e) {
+    const url = document.getElementById('url').value.trim();
+    const file = document.getElementById('image').files.length;
+
+    if (!url && !file) {
+      e.preventDefault();
+      alert("Por favor, introduce una URL de imagen o selecciona un archivo antes de enviar el formulario.");
+    }
+  });
+</script>
+</body>
+</html>

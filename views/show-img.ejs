@@ -1,0 +1,112 @@
+<!-- views/show-img.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Imágenes</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <%- include('partials/navbar') %>
+    <h1>Lista de Imágenes</h1>
+   <div class="container">
+    <div class="filterForm"> <form class="filterForm" id="filterForm">
+      <label for="search">Título:</label>
+      <input type="text" id="search" placeholder="Buscar por título...">
+
+      <label for="startDate">Desde:</label>
+      <input type="date" id="startDate" name="startDate">
+
+      <label for="endDate">Hasta:</label>
+      <input type="date" id="endDate" name="endDate">
+
+      <button type="reset" id="resetButton">Borrar filtros</button>
+    </form></div>
+    <div class="img-gallery"><ul id="imageList">
+  <% if (combinedImages && combinedImages.length) { %>
+    <% combinedImages.forEach(img => { %>
+      <% if (img && img.title && img.url) { %>
+        <li class="image-item"
+            data-title="<%= img.title %>"
+            data-date="<%= img.date || '' %>"
+            data-category="<%= img.category || '' %>">
+
+          <% if (img.category) { %>
+            <h3><%= img.category.toUpperCase() %></h3>
+          <% } %>
+
+          <h2><%= img.title.toUpperCase() %></h2>
+
+          <img src="<%= img.url %>" alt="<%= img.title %>" width="450">
+
+          <% if (img.date) { %>
+            <p>Fecha: <%= img.date %></p>
+          <% } %>
+
+          <% if (img.color) { %>
+            <div class="color" style="background-color: <%= img.color %>;">
+              <%= img.color %>
+            </div>
+          <% } %>
+              <form action="/delete-image" method="POST" enctype="application/x-www-form-urlencoded" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta imagen?');">
+                <input type="hidden" name="id" value="<%= img.id %>">
+                <button type="submit" class="delete-btn">X</button>
+              </form>
+            </li>
+            <% } %>
+              <% }) %>
+                <% } else { %>
+                  <li>No hay imágenes para mostrar.</li>
+                  <% } %>
+    </ul></div></div>
+    <%- include('partials/footer') %>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const searchInput = document.getElementById('search');
+          const startDateInput = document.getElementById('startDate');
+          const endDateInput = document.getElementById('endDate');
+          const clearBtn = document.getElementById('resetButton');
+
+          const imageItems = Array.from(document.querySelectorAll('.image-item'));
+
+          function applyFilters() {
+            const search = searchInput.value.trim().toLowerCase();
+            const startDate = startDateInput.value ? new Date(startDateInput.value) : null;
+            const endDate = endDateInput.value ? new Date(endDateInput.value) : null;
+
+            imageItems.forEach(item => {
+              const title = item.dataset.title.toLowerCase();
+              const date = new Date(item.dataset.date);
+
+              const matchTitle = !search || title.includes(search);
+              const matchStart = !startDate || date >= startDate;
+              const matchEnd = !endDate || date <= endDate;
+
+              if (matchTitle && matchStart && matchEnd) {
+                item.style.display = '';
+              } else {
+                item.style.display = 'none';
+              }
+            });
+          }
+
+          [searchInput, startDateInput, endDateInput].forEach(input => {
+            input.addEventListener('input', applyFilters);
+          });
+
+          clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            startDateInput.value = '';
+            endDateInput.value = '';
+            applyFilters();
+          });
+
+          applyFilters(); // aplicar al cargar
+        });
+      </script>
+
+</body>
+
+</html>

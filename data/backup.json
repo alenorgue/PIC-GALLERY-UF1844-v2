@@ -1,0 +1,40 @@
+[
+  {
+    "id": "f4c3e199-09b4-4930-b8a5-00bdee91132e",
+    "title": "Tigre",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Bengal_tiger_%28Panthera_tigris_tigris%29_female_3_crop.jpg/1599px-Bengal_tiger_%28Panthera_tigris_tigris%29_female_3_crop.jpg?20200315230221",
+    "date": "2025-05-22",
+    "color": "#cccccc",
+    "category": "animales"
+  },
+  {
+    "id": "4ecb6f79-4cbf-43d9-a491-1546a2ed8231",
+    "title": "Zorro",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/Zorro_en_su_habitat.jpg",
+    "date": "2025-05-19",
+    "category": "animales"
+  },
+  {
+    "id": "34a5b0db-f94c-46a7-9e0c-205e2e9c858e",
+    "title": "Zorro",
+    "url": "https://imgs.search.brave.com/ynhpxSQ3FGkBi035SHmM1Iqmjtv_LLe4InC-28qIyLw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvNDg1/MzY0MzcwL2VzL2Zv/dG8vZm94LWVuLWxh/LXByYWRlcmEuanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPVhN/WmpkVmpmSG1MOFJl/VWR6cmFybWJTclpU/b3hXS2NZeDFLQlM0/aHAwekU9",
+    "date": "2025-01-13",
+    "category": "animales"
+  },
+  {
+    "id": "a63349d4-401e-4d91-851b-8e7e169bcb23",
+    "title": "Zorro",
+    "url": "https://imgs.search.brave.com/ynhpxSQ3FGkBi035SHmM1Iqmjtv_LLe4InC-28qIyLw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvNDg1/MzY0MzcwL2VzL2Zv/dG8vZm94LWVuLWxh/LXByYWRlcmEuanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPVhN/WmpkVmpmSG1MOFJl/VWR6cmFybWJTclpU/b3hXS2NZeDFLQlM0/aHAwekU9",
+    "date": "2025-05-23",
+    "color": "#202c26",
+    "category": "animales"
+  },
+  {
+    "id": "2806c992-9ff3-4fcc-89a8-f8eb0c4b0fd7",
+    "title": "Zorro",
+    "url": "https://imgs.search.brave.com/ynhpxSQ3FGkBi035SHmM1Iqmjtv_LLe4InC-28qIyLw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvNDg1/MzY0MzcwL2VzL2Zv/dG8vZm94LWVuLWxh/LXByYWRlcmEuanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPVhN/WmpkVmpmSG1MOFJl/VWR6cmFybWJTclpU/b3hXS2NZeDFLQlM0/aHAwekU9",
+    "date": "2025-05-24",
+    "color": "#202c26",
+    "category": "animales"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "697a6bd6-bc8d-43f4-8266-30345f77f548",
+    "title": "Delfín",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Eilat_Dolphin_Reef_%283%29.jpg",
+    "date": "2025-05-19",
+    "color": "#051c2d",
+    "category": "animales"
+  },
+  {
+    "id": "ee8a17cf-41e9-4c55-9cc1-e69fc8b186b2",
+    "title": "Lobo",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Canis_lupus_265b.jpg",
+    "date": "2025-05-21",
+    "color": "#c7c5c6",
+    "category": "animales"
+  },
+  {
+    "id": "f6c30f85-8d31-4561-90d3-4a8fa2b1ac27",
+    "title": "Lobos",
+    "url": "https://imgs.search.brave.com/xMm7PdmUBp6IALD8Y7QESoRokwoKsXFF8k18qKf_Un0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvOTEy/NjAzMzEyL2VzL3Zl/Y3Rvci9sb2Jvcy1k/ZS1sYS1tYW5hZGEu/anBnP3M9NjEyeDYx/MiZ3PTAmaz0yMCZj/PXJqTHZVWFh0TEdj/bGtBR0Mtemo1c0JU/SDFEVktlY2gtR28x/TzhZTmc2czA9",
+    "date": "2025-05-20",
+    "color": "#2a4248",
+    "category": "animales"
+  },
+  {
+    "id": "12981477-c302-458f-bf6a-20148898e5c7",
+    "title": "Zorro",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/Zorro_en_su_habitat.jpg",
+    "date": "2025-05-22",
+    "color": "#6ca14a",
+    "category": "animales"
+  },
+  {
+    "id": "3fff103f-3ba7-42a6-89ee-25cde2654fae",
+    "title": "Tigre",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Bengal_tiger_%28Panthera_tigris_tigris%29_female_3_crop.jpg/1599px-Bengal_tiger_%28Panthera_tigris_tigris%29_female_3_crop.jpg?20200315230221",
+    "date": "2025-05-12",
+    "color": "#6e704f",
+    "category": "animales"
+  },
+  {
+    "id": "f9b24fa2-0e32-45ae-9b6e-396dfcc1c40b",
+    "title": "Zorro",
+    "url": "https://imgs.search.brave.com/ynhpxSQ3FGkBi035SHmM1Iqmjtv_LLe4InC-28qIyLw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvNDg1/MzY0MzcwL2VzL2Zv/dG8vZm94LWVuLWxh/LXByYWRlcmEuanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPVhN/WmpkVmpmSG1MOFJl/VWR6cmFybWJTclpU/b3hXS2NZeDFLQlM0/aHAwekU9",
+    "date": "2025-05-23",
+    "color": "#202c26",
+    "category": "animales"
+  },
+  {
+    "id": "9d2515a1-4968-4bbb-906f-4bb93b5329a9",
+    "title": "Grand Canyon",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Grand_Canyon_Hopi_Point_with_rainbow_2013.jpg",
+    "date": "2025-05-23",
+    "color": "#6f585a",
+    "category": "paisajes"
+  }
+]

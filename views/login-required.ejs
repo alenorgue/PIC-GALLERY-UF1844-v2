@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso restringido </title>
+     <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<%- include('partials/navbar') %>
+    <h1>Acceso restringido</h1>
+    <p>Para acceder a esta sección, debes iniciar sesión.</p>
+    <p><a href='/auth/google'>Autentificación con Google</a></p>
+    <p><a href="/home">Volver a la página principal</a></p>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

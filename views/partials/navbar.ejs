@@ -1,0 +1,29 @@
+<!-- views/partials/navbar.ejs -->
+<nav class="navbar">
+  <div class="nav-start">
+    <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+      ☰
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="/home">Página inicial</a>
+      <a href="/show-images">Galería</a>
+      <a href="/new-image">Añadir Imagen</a>
+      <a href="/auth/google">Iniciar sesión</a>
+      <a href="/logout">Cerrar sesión</a>
+    </div>
+  </div>
+  <form class="formSearch" action="/show-images" method="get">
+    <input type="text" name="search" placeholder="Buscar...">
+    <button type="submit">Buscar</button>
+  </form>
+</nav>
+<script>
+  const hamburger = document.querySelector('.hamburger');
+  const navMenu = document.querySelector('#nav-menu');
+
+  hamburger.addEventListener('click', () => {
+    const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+    hamburger.setAttribute('aria-expanded', !isExpanded);
+    navMenu.classList.toggle('show');
+  });
+</script>

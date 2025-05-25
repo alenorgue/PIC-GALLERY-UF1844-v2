@@ -1,0 +1,36 @@
+
+//Cloudinary
+(async function() {
+
+    // Configuration
+    cloudinary.config({ 
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+        api_key: process.env.CLOUDINARY_API_KEY, 
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        secure: true // Click 'View API Keys' above to copy your API secret
+    });
+    
+    // Upload an image
+    // Leer todas las imágenes del archivo JSON
+    const images = readImages();
+
+    for (const img of images) {
+      try {
+        // Subir la imagen a Cloudinary usando la URL y asignar el public_id como el id del objeto
+        const uploadResult = await cloudinary.uploader.upload(img.url, {
+          public_id: img.id,
+          context: {
+            title: img.title,
+            date: img.date,
+            color: img.color,
+            category: img.category
+          }
+        });
+        console.log(`Imagen subida: ${img.title} (${img.url})`);
+        console.log(uploadResult);
+      } catch (error) {
+        console.log(`Error subiendo ${img.title}:`, error);
+      }
+    }
+     
+})();

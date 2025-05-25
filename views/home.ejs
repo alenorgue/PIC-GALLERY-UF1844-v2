@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Picture Gallery</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <%- include('partials/navbar') %>
+
+<h1>Bienvenido/a a la galería</h1>
+  <p>Esta es una galería de imágenes donde puedes ver y añadir imágenes.</p>
+ <div class="container-home">
+    
+   <ul id="imageList">
+  <% if (images && images.length) { %>
+    <% images.forEach(function(img) { %>
+      <% if (img && img.title && img.url) { %>
+        <li class="image-item"
+            data-title="<%= img.title %>"
+            data-date="<%= img.date || '' %>"
+            data-category="<%= img.category || '' %>">
+
+          <% if (img.category) { %>
+            <h3><%= img.category.toUpperCase() %></h3>
+          <% } %>
+
+          <h2><%= img.title.toUpperCase() %></h2>
+
+          <img src="<%= img.url %>" alt="<%= img.title %>" width="450">
+
+          <% if (img.date) { %>
+            <p>Fecha: <%= img.date %></p>
+          <% } %>
+
+          <% if (img.color) { %>
+            <div class="color" style="background-color: <%= img.color %>;">
+              <%= img.color %>
+            </div>
+          <% } %>
+
+        </li>
+      <% } %>
+    <% }) %>
+  <% } else { %>
+    <li>No hay imágenes para mostrar.</li>
+  <% } %>
+</ul></div>
+
+  <%- include('partials/footer') %>
+  <script>
+  const hamburger = document.querySelector('.hamburger');
+  const navMenu = document.querySelector('#nav-menu');
+
+  hamburger.addEventListener('click', () => {
+    const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+    hamburger.setAttribute('aria-expanded', !isExpanded);
+    navMenu.classList.toggle('show');
+  });
+</script>
+</body>
+
+</html>
