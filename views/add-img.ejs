@@ -19,16 +19,8 @@
     required
   >
 
-  <label for="url">URL de la imagen (opcional si subes un archivo):</label>
-  <input 
-    type="url" 
-    name="url" 
-    id="url" 
-    placeholder="https://example.com/image.jpg"
-  >
-
-  <label for="image">O selecciona una imagen para subir:</label>
-  <input type="file" name="image" id="image" accept="image/*">
+  <label for="image">Selecciona una imagen para subir:</label>
+  <input type="file" name="image" id="image" accept="image/*" required>
 
   <label for="date">Fecha (puedes escribirla o seleccionarla):</label>
   <input 
@@ -52,8 +44,6 @@
 
   <input type="submit" value="Añadir imagen">
 </form>
-
-
 
 <% if (message) { %>
   <section>

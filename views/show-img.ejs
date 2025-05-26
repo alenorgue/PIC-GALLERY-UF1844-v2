@@ -46,21 +46,21 @@
           <% } %>
 
           <% if (img.color) { %>
-            <div class="color" style="background-color: <%= img.color %>;">
+            <div class="color" style="background-color: <%- img.color %>;">
               <%= img.color %>
             </div>
           <% } %>
-              <form action="/delete-image" method="POST" enctype="application/x-www-form-urlencoded" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta imagen?');">
-                <input type="hidden" name="id" value="<%= img.id %>">
-                <button type="submit" class="delete-btn">X</button>
-              </form>
-            </li>
-            <% } %>
-              <% }) %>
-                <% } else { %>
-                  <li>No hay imágenes para mostrar.</li>
-                  <% } %>
-    </ul></div></div>
+          <form action="/delete-image" method="POST" enctype="application/x-www-form-urlencoded" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta imagen?');">
+            <input type="hidden" name="public_id" value="<%= img.public_id %>">
+            <button type="submit" class="delete-btn">X</button>
+          </form>
+        </li>
+      <% } %>
+    <% }) %>
+  <% } else { %>
+    <li>No hay imágenes para mostrar.</li>
+  <% } %>
+</ul></div></div>
     <%- include('partials/footer') %>
       <script>
         document.addEventListener('DOMContentLoaded', () => {

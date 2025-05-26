@@ -1,8 +1,5 @@
 require('dotenv').config();
 const cloudinary = require('cloudinary').v2;
-const fs = require('fs');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 if (
   !process.env.CLOUDINARY_CLOUD_NAME ||
@@ -21,17 +18,7 @@ cloudinary.config({
   secure: true,
 });
 
-const jsonPath = path.join(__dirname, 'data', 'images.json');
-
-function leerImagenesLocales() {
-  if (!fs.existsSync(jsonPath)) return [];
-  return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-}
-
-function guardarImagenes(images) {
-  fs.writeFileSync(jsonPath, JSON.stringify(images, null, 2), 'utf8');
-}
-
+// Obtiene imágenes y metadatos solo de Cloudinary
 async function obtenerImagenesCloudinary(folder) {
   let recursos = [];
   let next_cursor = null;
@@ -41,6 +28,8 @@ async function obtenerImagenesCloudinary(folder) {
       prefix: `${folder}/`,
       max_results: 500,
       next_cursor: next_cursor,
+      colors: true, // Solicita colores dominantes si está habilitado en Cloudinary
+      context: true // Solicita metadatos personalizados si existen
     });
     recursos = recursos.concat(resultado.resources);
     next_cursor = resultado.next_cursor;
@@ -48,46 +37,43 @@ async function obtenerImagenesCloudinary(folder) {
   return recursos;
 }
 
-async function actualizarJSON() {
+// Obtiene y muestra metadatos de Cloudinary
+async function mostrarImagenesCloudinary() {
   const carpeta = 'Gallery';
-  const imagenesLocales = leerImagenesLocales();
-  const localesPorPublicId = {};
-
-  imagenesLocales.forEach(img => {
-    if (img.public_id) {
-      localesPorPublicId[img.public_id] = img;
-    }
-  });
-
   const recursosCloudinary = await obtenerImagenesCloudinary(carpeta);
-console.log(`Recursos obtenidos de Cloudinary: ${recursosCloudinary.length}`);
-  const nuevasImagenes = recursosCloudinary
-    .filter(r =>
-      ['jpg', 'jpeg'].includes(r.format.toLowerCase())
-    )
+  console.log(`Recursos obtenidos de Cloudinary: ${recursosCloudinary.length}`);
+
+  const imagenes = recursosCloudinary
+    .filter(r => ['jpg', 'jpeg'].includes(r.format.toLowerCase()))
     .map(r => {
-      const local = localesPorPublicId[r.public_id];
+      // Título: nombre del archivo sin extensión
+      const title = r.public_id.split('/').pop().split('.')[0];
+      // Fecha: fecha de creación
+      const date = new Date(r.created_at).toISOString().split('T')[0];
+      // Color dominante: primer color si existe
+      const color = r.colors && r.colors.length > 0 ? r.colors[0][0] : '';
+      // Categoría: desde context o tags si existe
+      let category = '';
+      if (r.context && r.context.custom && r.context.custom.category) {
+        category = r.context.custom.category;
+      } else if (r.tags && r.tags.length > 0) {
+        category = r.tags[0];
+      }
       return {
-        id: local?.id || uuidv4(),
-        title: local?.title || r.public_id.split('/').pop().split('.')[0], // título desde nombre del archivo
+        id: r.asset_id,
+        title,
         url: r.secure_url,
-        date: local?.date || new Date(r.created_at).toISOString().split('T')[0],
-        color: local?.color || '',
-        category: local?.category || '',
+        date,
+        color,
+        category,
         public_id: r.public_id,
       };
     });
 
-  // Si hay imágenes locales que no están en Cloudinary, las mantenemos
-  const cloudinaryIds = new Set(nuevasImagenes.map(img => img.public_id));
-  const imagenesExtrasLocales = imagenesLocales.filter(
-    img => img.public_id && !cloudinaryIds.has(img.public_id)
-  );
-
-  const final = [...nuevasImagenes, ...imagenesExtrasLocales];
-
-  guardarImagenes(final);
-  console.log(`✅ JSON actualizado con ${final.length} imágenes (Cloudinary + locales no duplicadas).`);
+  // Muestra los metadatos en consola (puedes exportar o usar en tu app)
+  console.log(imagenes);
+  return imagenes;
 }
 
-actualizarJSON().catch(console.error);
+// Ejecuta la función principal
+mostrarImagenesCloudinary().catch(console.error);

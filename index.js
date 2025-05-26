@@ -6,11 +6,10 @@ require('./auth');
 const app = express();
 const router = express.Router();
 const path = require('path');
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 5000
 const fs = require('fs');
 const getDominantColorFromUrl = require('./utils/getColor');
 const { v4: uuidv4 } = require('uuid');
-const DATA_PATH = path.join(__dirname, 'data', 'images.json');
 const cloudinary = require('cloudinary').v2;
 const multer = require("multer");
 
@@ -40,57 +39,67 @@ function isLoggedIn(req, res, next){
   req.user ? next() : res.render('login-required.ejs');
 }
 
-// Función para leer las imágenes desde el archivo JSON
-function readImages() {
-  try {
-    const data = fs.readFileSync(DATA_PATH, 'utf8');
-    const parsed = JSON.parse(data);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (err) {
-    return [];
-  }
-};
-async function importFromCloudinaryFolder(Gallery) {
-  const response = await cloudinary.search
-    .expression(`folder:${Gallery} AND resource_type:image`)
-    .sort_by("public_id", "desc")
-    .max_results(100)
-    .execute();
+// Configuration
+cloudinary.config({ 
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true // Click 'View API Keys' above to copy your API secret
+});
 
-  return response.resources.map(img => ({
-    url: img.secure_url,
-    title: img.public_id.split("/").pop()
-  }));
-};
-    // Configuration
-    cloudinary.config({ 
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-        api_key: process.env.CLOUDINARY_API_KEY, 
-        api_secret: process.env.CLOUDINARY_API_SECRET,
-        secure: true // Click 'View API Keys' above to copy your API secret
+// Nueva función: obtener imágenes y metadatos solo de Cloudinary
+async function getCloudinaryImages(folder = 'Gallery') {
+  let recursos = [];
+  let next_cursor = null;
+  do {
+    const resultado = await cloudinary.api.resources({
+      type: 'upload',
+      prefix: `${folder}/`,
+      max_results: 500,
+      next_cursor: next_cursor,
+      colors: true,
+      context: true
     });
+    recursos = recursos.concat(resultado.resources);
+    next_cursor = resultado.next_cursor;
+  } while (next_cursor);
 
-
-// Función para guardar una nueva imagen en el JSON
-function saveImages(images) {
-
-  fs.writeFileSync(DATA_PATH, JSON.stringify(images, null, 2), 'utf8');
+  return recursos
+    .filter(r => ['jpg', 'jpeg'].includes(r.format.toLowerCase()))
+    .map(r => {
+      const title = r.public_id.split('/').pop().split('.')[0];
+      const date = new Date(r.created_at).toISOString().split('T')[0];
+      const color = r.colors && r.colors.length > 0 ? r.colors[0][0] : '';
+      let category = '';
+      if (r.context && r.context.custom && r.context.custom.category) {
+        category = r.context.custom.category;
+      } else if (r.tags && r.tags.length > 0) {
+        category = r.tags[0];
+      }
+      return {
+        id: r.asset_id,
+        title,
+        url: r.secure_url,
+        date,
+        color,
+        category,
+        public_id: r.public_id,
+      };
+    });
 }
-//Ruta de autentificacion
+
+// Rutas principales adaptadas para solo Cloudinary
 app.get("/", async (req, res) => {
-   const imagesJSON = readImages();
-  const imagesCloudinary = await importFromCloudinaryFolder("Gallery");
-    const combinedImages = [...imagesJSON, ...imagesCloudinary]
+  const images = await getCloudinaryImages();
   const { search } = req.query;
-
-  let filtered = combinedImages;
-
+  let filtered = images;
   if (search) {
     const lowerSearch = search.toLowerCase();
-    filtered = filtered.filter(img => img.title.toLowerCase().includes(lowerSearch)||
-    img.category.toLowerCase().includes(lowerSearch));
+    filtered = filtered.filter(img =>
+      img.title.toLowerCase().includes(lowerSearch) ||
+      (img.category && img.category.toLowerCase().includes(lowerSearch))
+    );
   }
-
   filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
   res.render('home', {
     images: filtered,
@@ -114,20 +123,16 @@ app.get('/auth/failure', (req, res) => {
 
 // Ruta a home
 app.get("/home", async (req, res) => {
-  const imagesJSON = readImages();
-  const imagesCloudinary = await importFromCloudinaryFolder("Gallery");
-  const combinedImages = [...imagesJSON, ...imagesCloudinary]
-
+  const images = await getCloudinaryImages();
   const { search } = req.query;
-
-  let filtered = combinedImages;
-
+  let filtered = images;
   if (search) {
     const lowerSearch = search.toLowerCase();
-    filtered = filtered.filter(img => img.title.toLowerCase().includes(lowerSearch)||
-    img.category.toLowerCase().includes(lowerSearch));
+    filtered = filtered.filter(img =>
+      img.title.toLowerCase().includes(lowerSearch) ||
+      (img.category && img.category.toLowerCase().includes(lowerSearch))
+    );
   }
-
   filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
   res.render('home', {
     images: filtered,
@@ -142,63 +147,54 @@ app.get("/new-image", isLoggedIn, (req, res) => {
   });
 });
 
+const uploadToCloudinary = require('./utils/uploadToCloudinary');
+
 // Ruta para manejar el envío del formulario
-app.post("/new-image", async (req, res) => {
-  const { title, url, date, category } = req.body;
-  const images = readImages();
+app.post("/new-image", upload.single('image'), async (req, res) => {
+  const { title, date, category } = req.body;
+  const file = req.file;
   const errors = [];
-  const id = uuidv4();
 
   const titlePattern = /^[a-zA-Z0-9 _áéíóúÁÉÍÓÚñÑüÜ]{1,30}$/;
   if (!titlePattern.test(title)) {
     errors.push('Título inválido.');
   }
-  try {
-    new URL(url);
-  } catch (e) {
-    errors.push('URL inválida.');
-  }
-
-  const alreadyExists = images.some(img => img.url === url);
-  if (alreadyExists) {
-    errors.push(`La imagen con URL: ${url} ya existe en la base de datos.`);
-  }
-  if (!title || !url) {
-    errors.push("Faltan campos obligatorios");
+  if (!file) {
+    errors.push('Debes seleccionar una imagen.');
   }
   if (errors.length > 0) {
     return res.render('add-img.ejs', { message: errors.join(' ') });
   }
 
-  //Obtener color
-  const color = await getDominantColorFromUrl(url);
-  console.log(`Color obtenido para ${url}: ${color}`);
-
-  // Guardar en el archivo JSON
-  images.push({ id, title, url, date, color, category });
-  saveImages(images);
-
-  console.log("Imagen añadida:", { title, url, date, color, category });
-  res.render("add-img.ejs", {
-    message: "La imagen se ha añadido correctamente"
-  });
+  try {
+    // Sube la imagen a Cloudinary con metadatos
+    const result = await uploadToCloudinary(file.path, {
+      folder: 'Gallery',
+      context: { title, category },
+      tags: category ? [category] : [],
+    });
+    // Elimina el archivo local tras subir
+    fs.unlinkSync(file.path);
+    res.render("add-img.ejs", {
+      message: "La imagen se ha añadido correctamente"
+    });
+  } catch (err) {
+    res.render('add-img.ejs', { message: 'Error al subir la imagen a Cloudinary.' });
+  }
 });
 
 // Ruta para mostrar todas las imágenes desde el archivo JSON
 app.get('/show-images', isLoggedIn, async (req, res) => {
-   const imagesJSON = readImages();
-  const imagesCloudinary = await importFromCloudinaryFolder("Gallery");
-    const combinedImages = [...imagesJSON, ...imagesCloudinary]
+  const images = await getCloudinaryImages();
   const { search } = req.query;
-
-  let filtered = combinedImages;
-
+  let filtered = images;
   if (search) {
     const lowerSearch = search.toLowerCase();
-    filtered = filtered.filter(img => img.title.toLowerCase().includes(lowerSearch)||
-    img.category.toLowerCase().includes(lowerSearch));
+    filtered = filtered.filter(img =>
+      img.title.toLowerCase().includes(lowerSearch) ||
+      (img.category && img.category.toLowerCase().includes(lowerSearch))
+    );
   }
-
   filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
   res.render('show-img', {
     combinedImages: filtered,
@@ -206,30 +202,15 @@ app.get('/show-images', isLoggedIn, async (req, res) => {
   });
 });
 
+// Eliminar imagen de Cloudinary
 app.post('/delete-image', isLoggedIn, async (req, res) => {
-  const { id } = req.body;
-  const imagesJSON = readImages();
-  const imagesCloudinary = await importFromCloudinaryFolder("Gallery");
-  const combinedImages = [...imagesJSON, ...imagesCloudinary];
-
-  // Guardar copia de seguridad antes de eliminar
-  const deletedImage = combinedImages.find(img => img.id === id);
-  if (deletedImage) {
-    const backupPath = path.join(__dirname, 'data', 'backup.json');
-    const backup = fs.existsSync(backupPath)
-      ? JSON.parse(fs.readFileSync(backupPath, 'utf8'))
-      : [];
-
-    backup.push(deletedImage);
-    fs.writeFileSync(backupPath, JSON.stringify(backup, null, 2), 'utf8');
-    console.log("Backup realizado correctamente");
+  const { public_id } = req.body;
+  try {
+    await cloudinary.uploader.destroy(public_id);
+    res.redirect('/show-images');
+  } catch (err) {
+    res.send('Error al eliminar la imagen de Cloudinary.');
   }
-
-  // Eliminar imagen solo de las locales (JSON)
-  const updatedImages = imagesJSON.filter(img => img.id != id);
-  saveImages(updatedImages);
-  console.log("Imagen eliminada correctamente");
-  res.redirect('/show-images');
 });
 
 app.get('/logout', (req, res )=> {

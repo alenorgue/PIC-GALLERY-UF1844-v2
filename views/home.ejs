@@ -37,11 +37,8 @@
           <% } %>
 
           <% if (img.color) { %>
-            <div class="color" style="background-color: <%= img.color %>;">
-              <%= img.color %>
-            </div>
+            <div class="color" style="background-color: <%- img.color %>;"><%= img.color %></div>
           <% } %>
-
         </li>
       <% } %>
     <% }) %>

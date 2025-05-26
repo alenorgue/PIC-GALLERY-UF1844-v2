@@ -1,12 +1,16 @@
 // services/uploadToCloudinary.js
-const cloudinary = require("../config/cloudinary");
+const cloudinary = require('cloudinary').v2;
 
-async function subirImagenPorURL(imageUrl, folder = "Gallery") {
-  const result = await cloudinary.uploader.upload(imageUrl, {
-    folder,
-    type: "upload"
+async function uploadToCloudinary(filePath, options = {}) {
+  // options: { folder, context, tags }
+  const result = await cloudinary.uploader.upload(filePath, {
+    folder: options.folder || 'Gallery',
+    context: options.context || {},
+    tags: options.tags || [],
+    type: 'upload',
+    resource_type: 'image',
   });
-  return result.secure_url; // URL pública segura
+  return result;
 }
 
-module.exports = subirImagenPorURL;
+module.exports = uploadToCloudinary;
